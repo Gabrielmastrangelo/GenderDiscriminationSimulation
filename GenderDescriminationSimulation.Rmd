@@ -1,0 +1,73 @@
+---
+title: "Gender Discrimination Study"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+# Introduction
+
+A study on gender discrimination conducted in 1972 involved 48 male bank supervisors being presented with identical personnel files and asked to evaluate if the person was suitable for a branch manager position described as "routine." Half of the supervisors were given files with a male candidate, while the other half were given files with a female candidate, with the allocation randomly determined. Out of the 48 files assessed, 35 were recommended for promotion. The study aimed to determine if there was any unfair discrimination against women.
+
+```{r}
+library(knitr)
+
+data <- data.frame(Gender = c("Male", "Female"),
+                   Promoted = c(21, 14),
+                   NotPromoted = c(3, 10),
+                   Total = c(24, 24))
+
+data
+```
+
+Let's compute the proportion of promotion for each gender.
+
+```{r, echo=FALSE, message=FALSE, results='hide'}
+library(tidyverse)
+
+prop_table <- data.frame(ProportionPromoted = data$Promoted/data$Total) %>%
+  mutate(Gender = c('Male', 'Female'))
+
+prop_table
+```
+## Simulation
+
+The simulation involves a sample of 48 individuals, comprised of 24 males and 24 females. From this sample, we will select 35 individuals for promotion, without replacement.
+After the selection process, we will carefully count the number of males and females who were promoted and compute their respective proportions. Finally, we will take the difference between the male and female proportions to understand any disparities. This entire process will be repeated multiple times to strengthen the accuracy of our findings.
+
+
+```{r}
+simulation <- function() {
+  sample_data <- c(replicate(24, "Male"), replicate(24, "Female"))
+  sampled <- sample(sample_data,35,replace=F)
+  
+  sampled_prop_male_promoted <- mean(sampled == 'Male')
+  return(sampled_prop_male_promoted-(1-sampled_prop_male_promoted))
+}
+
+result <- data.frame(ProportionFemalePromoted = replicate(1000, simulation()))
+
+head(result)
+```
+## Graphical Representation of the Simulation
+
+We create a histogram of the results from the simulation, and we plot a straight line where the actual difference happen in the x-axis, to see how likely this would happen by pure chance.
+
+```{r, echo=FALSE, message=FALSE, results='hide'}
+library(ggplot2)
+
+xintercept <- prop_table[1, 'ProportionPromoted'] - prop_table[2, 'ProportionPromoted']
+
+ggplot(result, aes(x=ProportionFemalePromoted)) +
+  geom_histogram() +
+  geom_vline(aes(xintercept = xintercept), colour="blue") +
+  ggtitle("Simulated for Random Difference of Proportions of Promotion by Gender") +
+  xlab("Difference Proportion Male Promoted - Proportion Female Promoted") +
+  scale_x_continuous(labels = scales::percent)
+
+```
+
+## Conclusion
+
+From the graphical representation, we can say that it is very unlikely that this result happened due to pure random chance. Therefore, we can say that there is an association between gender and promotion. 
+
