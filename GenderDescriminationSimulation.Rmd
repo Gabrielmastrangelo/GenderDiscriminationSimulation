@@ -1,8 +1,10 @@
 ---
 title: "Gender Discrimination Study"
 output:
-  pdf_document: default
+  html_document:
+    df_print: paged
   html_notebook: default
+  pdf_document: default
 ---
 
 # Introduction
@@ -33,7 +35,7 @@ prop_table
 ## Simulation
 
 The simulation involves a sample of 48 individuals, comprised of 24 males and 24 females. From this sample, we will select 35 individuals for promotion, without replacement.
-After the selection process, we will carefully count the number of males and females who were promoted and compute their respective proportions. Finally, we will take the difference between the male and female proportions to understand any disparities. This entire process will be repeated multiple times to strengthen the accuracy of our findings.
+After the selection process, we will carefully count the number of males and females who were promoted and compute the proportion of males, and females who got a promotion Finally, we will take the difference between the these proportions to understand any disparities. This entire process will be repeated 1000 times to strengthen the accuracy of our findings.
 
 
 ```{r}
@@ -41,8 +43,8 @@ simulation <- function() {
   sample_data <- c(replicate(24, "Male"), replicate(24, "Female"))
   sampled <- sample(sample_data,35,replace=F)
   
-  sampled_prop_male_promoted <- mean(sampled == 'Male')
-  return(sampled_prop_male_promoted-(1-sampled_prop_male_promoted))
+  sampled_prop_male_promoted <- sum(sampled == 'Male')
+  return((sampled_prop_male_promoted-(35-sampled_prop_male_promoted))/24)
 }
 
 result <- data.frame(ProportionFemalePromoted = replicate(1000, simulation()))
@@ -70,4 +72,5 @@ ggplot(result, aes(x=ProportionFemalePromoted)) +
 ## Conclusion
 
 From the graphical representation, we can say that it is very unlikely that this result happened due to pure random chance. Therefore, we can say that there is an association between gender and promotion. 
+
 
