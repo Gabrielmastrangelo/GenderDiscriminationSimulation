@@ -11,4 +11,4 @@ A study on gender discrimination conducted in 1972 involved 48 male bank supervi
 
 + R notebook that introduces the study, design and analyse the simulation.
 + Pdf and html versions of the R notebook.
-  + Link to render the html version: [Gender Discrimination Simulation html]
+  + Link to render the html version: [Gender Discrimination Simulation html](https://raw.githack.com/Gabrielmastrangelo/GenderDiscriminationSimulation/main/Simulation.html)
